@@ -1,0 +1,463 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="../neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../transform-animation-multiple/transform-animation-multiple.html">
+
+<!--
+`radial-gauge` is an element providing an animated radial gauge (HTML5+CSS3) that may contain up to two gauge faces (secondary is nested inside primary one).
+It's important to note, that a radial guage will display and animate only when 'reportalAppReady' event is fired. Generally that event is fired from app.js when all components are loaded
+
+Make sure you include the contents of this style module (as-is or modified) in your theme file or main document to make the gauges display properly:
+
+    <style is="custom-style">
+      radial-gauge {
+        --radial-gauge-width:120px;
+        --radial-gauge-rail-width:5px;
+        --radial-gauge-secondary-rail-width:5px;
+        --radial-gauge-secondary-offset: 0px;
+        --radial-gauge-info-edge-offset: 5px;
+      }
+    </style>
+
+Example for a single gauge with range at the top(default):
+
+    <radial-gauge value="76%" min="0" max="100" color="green" range></radial-gauge>
+
+Example for a single gauge with range at the bottom:
+
+    <radial-gauge value="65%" min="-100" max="100" color="amber" range range-position="bottom"></radial-gauge>
+
+Example for a double gauge with changed styles and a prefixed long value that adjusts font-size automatically:
+
+    <style is="custom-style">
+      radial-gauge#fatOne{
+        --radial-gauge-width: 150px;
+        --radial-gauge-rail-width:16px;
+        --radial-gauge-secondary-rail-width:8px;
+        --radial-gauge-secondary-offset: -8px;
+        --radial-gauge-info-edge-offset: 5px;
+      }
+    </style>
+    <radial-gauge id="fatOne" value="84.078928" min="0" max="100" prefix="$" color="green" secondary-value="45" secondary-color="red"></radial-gauge>
+
+Example for a gauge with top and bottom info, dynamic color calculation for primary gauge and a custom color for top-info:
+
+    <radial-gauge min="-100" max="100" range range-position="bottom" value="95" color="this.value<=69?'red':(this.value>=90?'green':'amber')" secondary-value="15" secondary-color="red" top-info="-44% " top-info-icon="undo" custom-top-info-color="#03A9F4" bottom-info="20%" bottom-info-icon="trending-up" bottom-info-color="grey"></radial-gauge>
+
+### Styling
+
+!!!The following four custom properties and mixins _MUST_ be included in your theme file, or custom-style and given values:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--radial-gauge-width` | Diameter of the primary gauge in pixels or other units (apart from %) | `120px`
+`--radial-gauge-rail-width` | Width of the rail (primary gauge radial bar thickness) | `7px`
+`--radial-gauge-secondary-rail-width` | Width of the rail for secondary gauge (inside the primary) | `7px`
+`--radial-gauge-secondary-offset` | Gap between primary and secondary gauge  | `0px`
+`--radial-gauge-info-edge-offset` | How far (from top or bottom respectively) the topInfo section and bottomInfor section are placed from the gauges' edge toward the main value. This setting might need tweaking when secondary gauge is used and its rail is very wide, so the top and bottom infos overlap it. | `5px`
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--radial-gauge-rail` | Mixin for the gauge container (that has the grey rail underlying the primary gauge) | `{}`
+`--radial-gauge-rail-background-color` | Rail background color | `#EEEEEE`
+`--radial-gauge-info-circle` | Mixin for the round area inside the gauges which serves a container for all information | `{}`
+`--radial-gauge-value` | Mixin for the main value | `{}`
+`--radial-gauge-top-info` | Mixin for `topInfo` section | `{}`
+`--radial-gauge-bottom-info` | Mixin for `bottomInfo` section | `{}`
+`--radial-gauge-info-icon` | Mixin for icon styles for both info sections | `{--iron-icon-width:14px; --iron-icon-height:14px;}`
+`--radial-gauge-range` | Mixin for both `min` and `max` range labels | `{}`
+
+Shared custom properties:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--conditional-formatting-red` | red color preset | `--paper-red-500`
+`--conditional-formatting-amber` | amber color preset | `--paper-amber-500`
+`--conditional-formatting-green` | green color preset | `--paper-green-500`
+`--conditional-formatting-grey` | grey color preset | `--paper-grey-500`
+
+
+@group Reportal Elements
+@element radial-gauge
+@demo demo/index.html
+-->
+<dom-module id="radial-gauge">
+  <template strip-whitespace>
+    <style>
+
+      :host {
+        display: block;
+        --radial-gauge-secondary-width: calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2);
+        --radial-gauge-offset: calc(var(--radial-gauge-rail-width) * -1);
+        --radial-gauge-half-width: calc(var(--radial-gauge-width) / 2 );
+        --radial-gauge-secondary-half-width: calc((var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2) / 2 );
+      }
+
+      :host #radialProgress {
+        margin: 0 auto;
+        width: var(--radial-gauge-width);
+        height: var(--radial-gauge-width);
+        border-radius: 50%;
+        position:relative;
+        box-sizing:border-box;
+        border-style: solid;
+        border-color: var(--radial-gauge-rail-background-color, #EEEEEE);
+        border-width: var(--radial-gauge-rail-width);
+        @apply(--radial-gauge-rail);
+      }
+      :host .mask {
+        clip: rect(0px, var(--radial-gauge-width), var(--radial-gauge-width), var(--radial-gauge-half-width));
+        z-index: 0;
+        display: block !important;
+        border:0;
+        background: transparent !important;
+        opacity:1 !important;
+      }
+      :host .fill{
+        clip: rect(0px, var(--radial-gauge-half-width), var(--radial-gauge-width), 0px);
+        border-width: var(--radial-gauge-rail-width);
+      }
+
+      :host .mask, :host .fill {
+        width: var(--radial-gauge-width);
+        height: var(--radial-gauge-width);
+        will-change: transform;
+        position: absolute;
+        border-radius: 50%;
+        box-sizing: border-box;
+        border-style: solid;
+      }
+      :host .secondary .mask {
+        clip: rect(0px, var(--radial-gauge-secondary-width), var(--radial-gauge-secondary-width),  var(--radial-gauge-secondary-half-width));
+      }
+
+      :host .secondary .fill{
+        clip: rect(0px, var(--radial-gauge-secondary-half-width), var(--radial-gauge-secondary-width), 0px);
+        border-width: var(--radial-gauge-secondary-rail-width);
+      }
+
+      :host .secondary .mask, :host .secondary .fill {
+        width: var(--radial-gauge-secondary-width);
+        height: var(--radial-gauge-secondary-width);
+      }
+      :host .primary, :host .secondary{
+        position: absolute;
+        box-sizing: content-box;
+        z-index:0;
+      }
+      :host #radialProgress.top .primary{
+        top: var(--radial-gauge-offset);
+        left: var(--radial-gauge-offset);
+      }
+      :host #radialProgress.bottom .primary{
+        bottom: var(--radial-gauge-offset);
+        right: var(--radial-gauge-offset);
+      }
+      :host #radialProgress.top .secondary{
+        top: var(--radial-gauge-secondary-offset);
+        left:  var(--radial-gauge-secondary-offset);
+      }
+      :host #radialProgress.bottom .secondary{
+        bottom:  var(--radial-gauge-secondary-offset);
+        right:  var(--radial-gauge-secondary-offset);
+      }
+      :host #radialProgress.bottom > .primary, :host #radialProgress.bottom > .secondary {
+        transform: rotate(180deg);
+      }
+      :host #radialProgress.bottom {
+        margin-bottom: 20px;
+        margin-top: 0;
+      }
+      :host #radialProgress.top {
+        margin-bottom: 10px;
+        margin-top: 10px;
+      }
+
+      :host .inset{
+        position: absolute;
+        top: 0; bottom: 0; right: 0; left: 0;
+        z-index:0;
+        border-radius: 50%;
+        @apply(--layout-vertical);
+        @apply(--radial-gauge-info-circle);
+      }
+
+      :host .inset>#mainDigit {
+        font-size: 33px;
+        text-align: center;
+        @apply(--radial-gauge-value);
+      }
+
+      :host #topInfo,:host #bottomInfo {
+        font-size: 13px;
+        text-align: center;
+        vertical-align: baseline;
+        padding:0 10%;
+      }
+      :host #topInfo{
+        padding-top:var(--radial-gauge-info-edge-offset, 5px);
+        @apply(--radial-gauge-top-info);
+      }
+      :host[secondary-value]:not([hide-secondary-gauge]) #topInfo{
+        padding-top:var(--radial-gauge-info-edge-offset, 10px);
+      }
+      :host #bottomInfo{
+        padding-bottom:var(--radial-gauge-info-edge-offset, 5px);
+        @apply(--radial-gauge-bottom-info);
+      }
+      :host[secondary-value]:not([hide-secondary-gauge]) #bottomInfo{
+        padding-bottom:var(--radial-gauge-info-edge-offset, 10px);
+      }
+      :host .inset iron-icon{
+        --iron-icon-width:0;
+        --iron-icon-height:0;
+      }
+      :host .inset iron-icon[icon]{
+        --iron-icon-width:14px;
+        --iron-icon-height:14px;
+        @apply(--radial-gauge-info-icon);
+      }
+
+      :host #range>span {padding:0 10px}
+      :host #range.top{
+        @apply(--layout-horizontal-reverse);
+        top: calc((var(--radial-gauge-rail-width, 7px) + 10px) * -1 );
+      }
+      :host #range.bottom {
+        top: calc(var(--radial-gauge-width, 120px) - var(--radial-gauge-rail-width, 7px));
+      }
+      :host #range.bottom>.min, :host #range.top>.max{
+        border-right:1px solid var(--primary-text-color,#000); text-align: right;
+      }
+      :host #range>.min, :host #range>.max{
+        @apply(--layout-flex);
+      }
+
+      :host #range {
+        @apply(--layout-horizontal);
+        font-size: 10px;
+        line-height: 10px;
+        position: absolute;
+        color: var(--primary-text-color,#000);
+        width: calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width, 7px) * 2);
+        @apply(--radial-gauge-range);
+      }
+     :host #topInfo, :host #mainDigit, :host #bottomInfo{
+       @apply(--layout-flex);
+     @apply(--layout-horizontal);
+    }
+    :host #topInfo>span, :host #mainDigit>span, :host #bottomInfo>span{
+      @apply(--layout-flex);
+      @apply(--layout-self-center);
+    }
+
+    :host .red .fill { border-color: var(--conditional-formatting-red, --paper-red-500); }
+    :host .red { color: var(--conditional-formatting-red,--paper-red-500); }
+
+    :host .amber .fill { border-color: var(--conditional-formatting-amber, --paper-amber-500); }
+    :host .amber { color: var(--conditional-formatting-amber,--paper-amber-500); }
+
+    :host .green .fill { border-color: var(--conditional-formatting-green, --paper-green-500); }
+    :host .green {color: var(--conditional-formatting-green, --paper-green-500);}
+
+    :host .grey .fill {border-color: var(--conditional-formatting-grey, --paper-grey-500); }
+    :host .grey {color: var(--conditional-formatting-grey,--paper-grey-500);}
+
+  </style>
+    <div id="radialProgress" class$="[[rangePosition]]">
+      <div class="primary">
+        <div class="mask full">
+          <div class="fill" style$="border-color: {{customPrimaryColor}}"></div>
+        </div>
+        <div class="mask half">
+          <div class="fill" style$="border-color: {{customPrimaryColor}}"></div>
+        </div>
+      </div>
+      <div class="secondary " hidden$="[[_hideSecondaryGauge]]">
+        <div class="mask full">
+          <div class="fill" style$="border-color: {{customSecondaryColor}}"></div>
+        </div>
+        <div class="mask half">
+          <div class="fill" style$="border-color: {{customSecondaryColor}}"></div>
+        </div>
+      </div>
+      <div class="inset">
+        <div class$="[[rangePosition]]" id="range" hidden$="[[!range]]"><span class="min">{{prefix}}{{min}}</span><span class="max">{{prefix}}{{max}}</span></div>
+        <div id="topInfo"><span style$="color: {{customTopInfoColor}}"><iron-icon icon$="[[topInfoIcon]]"></iron-icon> {{topInfo}}</span></div>
+        <div id="mainDigit"><span style$="color: {{customPrimaryColor}}">{{prefix}}{{value}}</span></div>
+        <div id="bottomInfo"><span style$="color: {{customBottomInfoColor}}"><iron-icon icon$="[[bottomInfoIcon]]"></iron-icon> {{bottomInfo}}</span></div>
+      </div>
+    </div>
+  </template>
+
+</dom-module>
+
+
+<script>
+//  (function() {
+    'use strict';
+    addEventListener(('reportalAppReady'),function(){
+      Polymer({
+        is: 'radial-gauge',
+        behaviors: [
+          Polymer.NeonAnimationRunnerBehavior
+        ],
+        properties: {
+          /** `range` indicates that the gauge has range-labels placed at the top|bottom of the gauge */
+          range: {
+            type: Boolean,
+            value: false
+          },
+          /** `min` indicates range start, must start with a digit, may contain trailing characters (e.g. '100%'), mandatory! */
+          min: String,
+          /** `max` indicates range end, must start with a digit, may contain trailing characters (e.g. '100%'), mandatory! */
+          max: String,
+          /** `rangePosition` indicates where range labels are placed. Possible are: 'top' | 'bottom' */
+          rangePosition: {
+            type: String,
+            value: 'top' //default
+          },
+          /** `value` main digit. Must start with a digit, may contain trailing characters (e.g. '100%'), mandatory!*/
+          value: {
+            type: String
+          },
+          /* `prefix` - character(s) to be placed before `value` and `min` and `max` gauge labels.*/
+          prefix:String,
+          /**
+          *`color` of the main digit (`value`) and gauge representing that value. Preset colors: 'grey' | 'red' | 'amber' | 'green'.
+          * Supports ternary expression (e.g. color="this.value<=6?'red':(this.value>=9?'green':'amber')" ).
+          * NOTE: expression must use style of the properties (camelCase) prefixed with `this.`
+          */
+          color:{
+            type:String,
+            value:'grey'
+          },
+          /**
+           *`secondaryColor` - color of the secondary gauge( defined by `secondaryValue`). Preset colors: 'grey' | 'red' | 'amber' | 'green'.
+           * Supports ternary expression (e.g. `secondary-color="this.secondaryValue<=6?'red':(this.secondaryValue>=9?'green':'amber')"` ).
+           * NOTE: expression must use style of the properties (camelCase) prefixed with `this.`
+           */
+          secondaryColor:{
+            type:String,
+            value:'grey'
+          },
+          /** `secondaryValue` is the value for secondary gauge (displayed inside primary) used mainly for calculating secondary gauge rotation, not displayed in numeric form anywhere.
+           *  Must start with a digit, may contain trailing characters (e.g. '100%'), optional*/
+          secondaryValue: String,
+          /* optional piece of information placed above the main digit (`value`), prefixed with an `topInfoIcon` (if specified)*/
+          topInfo:String,
+          /*color for `topInfo` content, inherits color-presets and color ternary-computation like in `color` */
+          topInfoColor:String,
+          /*icon for `topInfo` content*/
+          topInfoIcon:String,
+          /* optional piece of information placed below the main digit (`value`), prefixed with an `bottomInfoIcon` (if specified)*/
+          bottomInfo:String,
+          /*color for `bottomInfo` content*/
+          bottomInfoColor:String,
+          /*icon for `bottomInfo` content, inherits color-presets and color ternary-computation like in `color`  */
+          bottomInfoIcon:String,
+          animationConfig: {
+            type: Object,
+            value: function () {return {primary: {},secondary: {}};}
+          },
+          _hideSecondaryGauge:{
+            type:Boolean,
+            value:false
+          },
+          /* custom color for `topInfo` content, accepts any valid CSS color declaration */
+          customTopInfoColor:String,
+          /* custom color for primary gauge, accepts any valid CSS color declaration */
+          customPrimaryColor:String,
+          /* custom color for `bottomInfo` content, accepts any valid CSS color declaration */
+          customBottomInfoColor:String,
+          /* custom color for secondary gauge, accepts any valid CSS color declaration */
+          customSecondaryColor:String
+
+
+        },
+        ready: function () {
+          //compute colors for gauge
+          var colors=[
+            {param:'color',nodes: Polymer.dom(this.root).querySelectorAll('.primary , #mainDigit>span')},
+            {param:'secondaryColor',nodes: Polymer.dom(this.root).querySelectorAll('.secondary')},
+            {param:'topInfoColor',nodes: Polymer.dom(this.root).querySelectorAll('#topInfo>span')},
+            {param:'bottomInfoColor',nodes: Polymer.dom(this.root).querySelectorAll('#bottomInfo>span')}
+          ];
+          colors.forEach(function(color){if(this[color.param] && this[color.param].length>0)this._computeColor(this[color.param],color.nodes);}.bind(this));
+
+          this._computeRotation({ value: this.value, animation: 'primary'});
+          if (this.secondaryValue && !this._hideSecondaryGauge){ this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this._hideSecondaryGauge=true} // define label position class
+        },
+        attached:function (){
+          this._adjustStyles();
+        },
+        _computeColor:function(color, nodes){
+          var re = /[\!=\<\>\)\(.]/gi;
+          if(nodes && nodes.length>0)[].slice.call(nodes).forEach(function(node){node.classList.add(re.test(color)?eval(color):color)}.bind(this));
+        },
+        _computeRotation: function(o){
+          if(!isNaN(parseFloat(o.value))){
+            var rotation = 180 / (parseFloat(this.max) - parseFloat(this.min)) * ((parseFloat(o.value)).toFixed(1) - parseFloat(this.min));
+            var fill_rotation = rotation!== 'NaN'? rotation:0;
+            var fix_rotation = rotation * 2;
+            var transitionDuration = 3000 / (parseFloat(this.max) - parseFloat(this.min)) * ((parseFloat(o.value)).toFixed(1)-parseFloat(this.min));
+            var nodes = Polymer.dom(this.root).querySelectorAll('.'+ o.animation+' .fill, .'+ o.animation+' .mask.full');
+            this.animationConfig[o.animation] = {
+              name: 'transform-animation-multiple',
+              transformFrom: 'rotate(0deg)',
+              transformTo: 'rotate('+ parseInt(fill_rotation) +'deg)',
+              nodes: Array.prototype.slice.call(nodes),
+              timing: {"duration":transitionDuration}
+            };
+            this.playAnimation(o.animation);//somehow it plays only the second time
+            this.playAnimation(o.animation);
+            for(var i=0;i<nodes.length;i++){
+              nodes[i].style.transform = 'rotate('+ fill_rotation+'deg)';
+            }
+          }
+        },
+        _adjustStyles: function(){
+          var strLen = this.value.trim().length + (this.prefix?this.prefix.length:0);
+          /* IE CSS has no support for calc() in clip, we must explicitly provide a value */
+          var customStyle=this._ownStyleProperties;
+          [["--radial-gauge-width","120px"],
+          ["--radial-gauge-rail-width","5px"],
+          ["--radial-gauge-secondary-rail-width","5px"],
+          ["--radial-gauge-secondary-offset", "0px"],
+          ["--radial-gauge-info-edge-offset", "5px"]].forEach(function(pair){
+            if(!this._ownStyleProperties[pair[0]]){this._ownStyleProperties[pair[0]]=pair[1]}
+          }.bind(this));
+          //for(var d in defaults){console.log(d)}
+
+
+          this.customStyle['--radial-gauge-secondary-width']= parseInt(customStyle['--radial-gauge-width']) - parseInt(customStyle['--radial-gauge-rail-width']) * 2 - parseInt(customStyle['--radial-gauge-secondary-offset']) * 2 + 'px';
+          this.customStyle['--radial-gauge-offset']= '-'+customStyle['--radial-gauge-rail-width'];
+          this.customStyle['--radial-gauge-half-width']= parseInt(customStyle['--radial-gauge-width']) / 2 +'px';
+          this.customStyle['--radial-gauge-secondary-half-width']= (parseInt(customStyle['--radial-gauge-width']) - parseInt(customStyle['--radial-gauge-rail-width']) * 2 - parseInt(customStyle['--radial-gauge-secondary-offset']) * 2) / 2 +'px';
+          this.updateStyles();
+          if (strLen > 4) {
+            var mainDigit = this.$.mainDigit;
+            mainDigit.style.fontSize = (parseInt(this.customStyle['--radial-gauge-secondary-width']) - ((this.secondaryValue && !this._hideSecondaryGauge)? parseInt(customStyle['--radial-gauge-secondary-rail-width']) : 0 )*2 - 10) / strLen * 1.9 + 'px';
+          }
+        }
+      });
+    });
+//  })();
+
+</script>
+
+

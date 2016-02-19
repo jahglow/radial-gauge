@@ -1,0 +1,36 @@
+{
+  "name": "transform-animation-multiple",
+  "authors": [
+    "Anonymous <anonymous@example.com>"
+  ],
+  "description": "An element providing a solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "seed"
+  ],
+  "main": "transform-animation-multiple.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/<USERNAME>/seed-element/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0",
+    "neon-animation": "PolymerElements/neon-animation#1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  },
+  "_release": "105eeb6124",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "105eeb612423df42fc6436af555a5382e950b3c0"
+  },
+  "_source": "git://github.com/jahglow/transform-animation-multiple.git",
+  "_target": "*",
+  "_originalSource": "jahglow/transform-animation-multiple"
+}

@@ -1,0 +1,46 @@
+<application>
+  <component name="libraryTable">
+    <library name="bootstrap" type="javaScript">
+      <properties>
+        <sourceFilesUrls>
+          <item url="file://$USER_HOME$/.WebStorm10/system/extLibs/http_maxcdn.bootstrapcdn.com_bootstrap_3.3.4_js_bootstrap.js" />
+        </sourceFilesUrls>
+      </properties>
+      <CLASSES>
+        <root url="file://$USER_HOME$/.WebStorm10/system/extLibs/http_maxcdn.bootstrapcdn.com_bootstrap_3.3.4_js_bootstrap.js" />
+      </CLASSES>
+      <SOURCES />
+    </library>
+    <library name="jquery-1.11.3" type="javaScript">
+      <properties>
+        <option name="frameworkName" value="jQuery" />
+        <option name="frameworkVersion" value="1.3." />
+        <sourceFilesUrls>
+          <item url="file://$USER_HOME$/.WebStorm10/system/extLibs/http_code.jquery.com_jquery-1.11.3.js" />
+        </sourceFilesUrls>
+      </properties>
+      <CLASSES>
+        <root url="file://$USER_HOME$/.WebStorm10/system/extLibs/http_code.jquery.com_jquery-1.11.3.js" />
+      </CLASSES>
+      <DOCUMENTATION>
+        <root url="http://api.jquery.com" />
+      </DOCUMENTATION>
+      <SOURCES />
+    </library>
+    <library name="yui" type="javaScript">
+      <properties>
+        <option name="frameworkName" value="YUI 3" />
+        <sourceFilesUrls>
+          <item url="file://$USER_HOME$/.WebStorm10/system/extLibs/http_yui.yahooapis.com_3.18.1_build_yui_yui.js" />
+        </sourceFilesUrls>
+      </properties>
+      <CLASSES>
+        <root url="file://$USER_HOME$/.WebStorm10/system/extLibs/http_yui.yahooapis.com_3.18.1_build_yui_yui.js" />
+      </CLASSES>
+      <DOCUMENTATION>
+        <root url="http://developer.yahoo.com/yui/3/api" />
+      </DOCUMENTATION>
+      <SOURCES />
+    </library>
+  </component>
+</application>

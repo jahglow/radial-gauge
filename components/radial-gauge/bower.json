@@ -1,0 +1,36 @@
+{
+  "name": "radial-gauge",
+  "version": "1.0.1",
+  "authors": [
+    "John Archer <jahglow@gmail.com>"
+  ],
+  "description": "Animated radial gauge with up to double rails",
+  "keywords": [
+    "web-component",
+    "polymer"
+  ],
+  "main": "radial-gauge.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/jahglow/radial-gauge/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0",
+    "iron-icons": "PolymerElements/iron-icons#1.0.0",
+    "neon-animation": "PolymerElements/neon-animation#1.0.0",
+    "paper-styles": "PolymerElements/paper-styles#1.0.0",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
+    "transform-animation-multiple": "jahglow/transform-animation-multiple"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*",
+    "paper-card": "PolymerElements/paper-card#^1.1.0"
+  },
+  "resolutions": {
+    "paper-styles": "^1.1.0",
+    "paper-card": "1.1.0"
+  }
+}

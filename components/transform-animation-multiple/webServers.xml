@@ -1,0 +1,16 @@
+<application>
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="f72638fb-a9d1-4976-934c-b46492024b93" name="godschurch" url="http://ftp.d1068613-47934.hostingspace.pro">
+        <fileTransfer host="ftp.d1068613-47934.hostingspace.pro" port="21" rootFolder="/webspace/httpdocs/alphaprint.godschurch.ru" password="dfeddff9df92dfc5dffddf92dffbdfeddfcddfd8df93dfdbdfe9df87dfd3dfe8" username="f135128">
+          <advancedOptions>
+            <advancedOptions controlEncoding="utf-8" dataProtectionLevel="Private" passiveMode="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="87ed3165-3885-4a9d-be5d-12cb319b29bb" name="test" url="http://localhost">
+        <fileTransfer accessType="LOCAL" />
+      </webServer>
+    </option>
+  </component>
+</application>
