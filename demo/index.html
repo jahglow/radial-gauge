@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>radial-gauge Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="../../paper-card/paper-card.html">
+
+    <link rel="import" href="../radial-gauge.html">
+    <script>HTMLImports.whenReady(function(){
+        console.log('loaded');
+        document.querySelector('template').fire('reportalAppReady');
+    });</script>
+</head>
+<body unresolved>
+
+<style is="custom-style">
+    :root{
+        /* radial-gauge */
+
+    }
+
+    body, html{font-family:Roboto}
+    paper-card{
+        width:calc(100% - 16px);
+        margin:8px;
+        @apply(--layout-flex);
+        min-width:250px;
+    }
+    .card-content{padding:16px}
+    .layout{@apply(--layout-horizontal);@apply(--layout-wrap); max-width: 766px; margin:0 auto}
+    radial-gauge{
+        margin:16px auto;
+
+        --radial-gauge-width: 120px;
+        --radial-gauge-rail-width:5px;
+        --radial-gauge-secondary-rail-width:5px;
+        --radial-gauge-secondary-offset: 2px;
+        --radial-gauge-info-edge-offset: 5px;
+    }
+    radial-gauge#fatOne{
+        --radial-gauge-width: 150px;
+        --radial-gauge-rail-width:16px;
+        --radial-gauge-secondary-rail-width:8px;
+        --radial-gauge-secondary-offset: -8px;
+        --radial-gauge-info-edge-offset: 5px;
+
+    }
+</style>
+
+<template is="dom-bind">
+    <div class="layout">
+        <paper-card heading="Gauge 1">
+            <div class="card-content"> Example for a single gauge with range at the top(default):
+                <radial-gauge value="76%" min="0" max="100" color="green" range></radial-gauge>
+            </div>
+        </paper-card>
+        <paper-card heading="Gauge 2">
+            <div class="card-content">Example for a single gauge with range at the bottom:
+                <radial-gauge value="65%" min="-100" max="100" color="amber" range range-position="bottom"></radial-gauge>
+            </div>
+        </paper-card>
+        <paper-card heading="Gauge 3">
+            <div class="card-content">
+                Example for a double gauge with changed styles and a prefixed long value that adjusts font-size automatically:
+                <radial-gauge id="fatOne" value="84.078928" min="0" max="100" prefix="$" color="green" secondary-value="45" secondary-color="red"></radial-gauge>
+            </div>
+        </paper-card>
+        <paper-card heading="Gauge 4">
+            <div class="card-content">
+                Example for a gauge with top and bottom info, dynamic color calculation for primary gauge and a custom color for top-info:
+                <radial-gauge min="-100" max="100" range range-position="bottom" value="95" color="this.value<=69?'red':(this.value>=90?'green':'amber')" secondary-value="15" secondary-color="red" top-info="-44% " top-info-icon="undo" custom-top-info-color="#03A9F4" bottom-info="20%" bottom-info-icon="trending-up" bottom-info-color="grey"></radial-gauge>
+            </div>
+        </paper-card>
+    </div>
+</template>
+</body>
+</html>
