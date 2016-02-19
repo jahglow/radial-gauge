@@ -4,7 +4,7 @@
   "authors": [
     "John Archer <jahglow@gmail.com>"
   ],
-  "description": "An element providing a solution to no problem in particular.",
+  "description": "Animated radial gauge with up to double rails",
   "keywords": [
     "web-component",
     "polymer"
