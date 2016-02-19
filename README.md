@@ -1,56 +1,75 @@
 # radial-gauge
 
-An element providing a starting point for your own reusable Polymer elements.
+`radial-gauge` is an element providing an animated radial gauge (HTML5+CSS3) that may contain up to two gauge faces (secondary is nested inside primary one).
+It's important to note, that a radial guage will display and animate only when 'reportalAppReady' event is fired. Generally that event is fired from app.js when all components are loaded
 
+Make sure you include the contents of this style module (as-is or modified) in your theme file or main document to make the gauges display properly:
 
-## Dependencies
+    <style is="custom-style">
+      radial-gauge {
+        --radial-gauge-width:120px;
+        --radial-gauge-rail-width:5px;
+        --radial-gauge-secondary-rail-width:5px;
+        --radial-gauge-secondary-offset: 0px;
+        --radial-gauge-info-edge-offset: 5px;
+      }
+    </style>
 
-Element dependencies are managed via [Bower](http://bower.io/). You can
-install that via:
+Example for a single gauge with range at the top(default):
 
-    npm install -g bower
+    <radial-gauge value="76%" min="0" max="100" color="green" range></radial-gauge>
 
-Then, go ahead and download the element's dependencies:
+Example for a single gauge with range at the bottom:
 
-    bower install
+    <radial-gauge value="65%" min="-100" max="100" color="amber" range range-position="bottom"></radial-gauge>
 
+Example for a double gauge with changed styles and a prefixed long value that adjusts font-size automatically:
 
-## Playing With Your Element
+    <style is="custom-style">
+      radial-gauge#fatOne{
+        --radial-gauge-width: 150px;
+        --radial-gauge-rail-width:16px;
+        --radial-gauge-secondary-rail-width:8px;
+        --radial-gauge-secondary-offset: -8px;
+        --radial-gauge-info-edge-offset: 5px;
+      }
+    </style>
+    <radial-gauge id="fatOne" value="84.078928" min="0" max="100" prefix="$" color="green" secondary-value="45" secondary-color="red"></radial-gauge>
 
-If you wish to work on your element in isolation, we recommend that you use
-[Polyserve](https://github.com/PolymerLabs/polyserve) to keep your element's
-bower dependencies in line. You can install it via:
+Example for a gauge with top and bottom info, dynamic color calculation for primary gauge and a custom color for top-info:
 
-    npm install -g polyserve
+    <radial-gauge min="-100" max="100" range range-position="bottom" value="95" color="this.value<=69?'red':(this.value>=90?'green':'amber')" secondary-value="15" secondary-color="red" top-info="-44% " top-info-icon="undo" custom-top-info-color="#03A9F4" bottom-info="20%" bottom-info-icon="trending-up" bottom-info-color="grey"></radial-gauge>
 
-And you can run it via:
+### Styling
 
-    polyserve
+!!!The following four custom properties and mixins _MUST_ be included in your theme file, or custom-style and given values:
 
-Once running, you can preview your element at
-`http://localhost:8080/components/radial-gauge/`, where `radial-gauge` is the name of the directory containing it.
+Custom property | Description | Default
+----------------|-------------|----------
+`--radial-gauge-width` | Diameter of the primary gauge in pixels or other units (apart from %) | `120px`
+`--radial-gauge-rail-width` | Width of the rail (primary gauge radial bar thickness) | `7px`
+`--radial-gauge-secondary-rail-width` | Width of the rail for secondary gauge (inside the primary) | `7px`
+`--radial-gauge-secondary-offset` | Gap between primary and secondary gauge  | `0px`
+`--radial-gauge-info-edge-offset` | How far (from top or bottom respectively) the topInfo section and bottomInfor section are placed from the gauges' edge toward the main value. This setting might need tweaking when secondary gauge is used and its rail is very wide, so the top and bottom infos overlap it. | `5px`
 
+The following custom properties and mixins are available for styling:
 
-## Testing Your Element
+Custom property | Description | Default
+----------------|-------------|----------
+`--radial-gauge-rail` | Mixin for the gauge container (that has the grey rail underlying the primary gauge) | `{}`
+`--radial-gauge-rail-background-color` | Rail background color | `#EEEEEE`
+`--radial-gauge-info-circle` | Mixin for the round area inside the gauges which serves a container for all information | `{}`
+`--radial-gauge-value` | Mixin for the main value | `{}`
+`--radial-gauge-top-info` | Mixin for `topInfo` section | `{}`
+`--radial-gauge-bottom-info` | Mixin for `bottomInfo` section | `{}`
+`--radial-gauge-info-icon` | Mixin for icon styles for both info sections | `{--iron-icon-width:14px; --iron-icon-height:14px;}`
+`--radial-gauge-range` | Mixin for both `min` and `max` range labels | `{}`
 
-Simply navigate to the `/test` directory of your element to run its tests. If
-you are using Polyserve: `http://localhost:8080/components/radial-gauge/test/`
+Shared custom properties:
 
-### web-component-tester
-
-The tests are compatible with [web-component-tester](https://github.com/Polymer/web-component-tester).
-Install it via:
-
-    npm install -g web-component-tester
-
-Then, you can run your tests on _all_ of your local browsers via:
-
-    wct
-
-#### WCT Tips
-
-`wct -l chrome` will only run tests in chrome.
-
-`wct -p` will keep the browsers alive after test runs (refresh to re-run).
-
-`wct test/some-file.html` will test only the files you specify.
+Custom property | Description | Default
+----------------|-------------|----------
+`--conditional-formatting-red` | red color preset | `--paper-red-500`
+`--conditional-formatting-amber` | amber color preset | `--paper-amber-500`
+`--conditional-formatting-green` | green color preset | `--paper-green-500`
+`--conditional-formatting-grey` | grey color preset | `--paper-grey-500`
