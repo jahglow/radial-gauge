@@ -308,9 +308,7 @@ Custom property | Description | Default
 
 
 <script>
-//  (function() {
     'use strict';
-    addEventListener(('reportalAppReady'),function(){
       Polymer({
         is: 'radial-gauge',
         behaviors: [
@@ -386,8 +384,16 @@ Custom property | Description | Default
           customBottomInfoColor:String,
           /* custom color for secondary gauge, accepts any valid CSS color declaration */
           customSecondaryColor:String
-
-
+        },
+        observers:[
+          '_primaryObserver(value, min, max)',
+          '_secondaryObserver(secondaryValue, min, max)'
+        ],
+        _primaryObserver:function(value,min, max){
+          this._computeRotation({ value: value, animation: 'primary'});
+        },
+        _secondaryObserver:function(value,min, max){
+          this._computeRotation({ value: value, animation: 'secondary'});
         },
         ready: function () {
           //compute colors for gauge
@@ -399,7 +405,7 @@ Custom property | Description | Default
           ];
           colors.forEach(function(color){if(this[color.param] && this[color.param].length>0)this._computeColor(this[color.param],color.nodes);}.bind(this));
 
-          this._computeRotation({ value: this.value, animation: 'primary'});
+          //this._computeRotation({ value: this.value, animation: 'primary'});
           if (this.secondaryValue && !this._hideSecondaryGauge){ this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this._hideSecondaryGauge=true} // define label position class
         },
         attached:function (){
@@ -455,8 +461,6 @@ Custom property | Description | Default
           }
         }
       });
-    });
-//  })();
 
 </script>
 

@@ -1,6 +1,6 @@
 {
   "name": "radial-gauge",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "authors": [
     "John Archer <jahglow@gmail.com>"
   ],
@@ -17,10 +17,10 @@
     "/test/"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.0",
-    "iron-icons": "PolymerElements/iron-icons#1.0.0",
-    "neon-animation": "PolymerElements/neon-animation#1.0.0",
-    "paper-styles": "PolymerElements/paper-styles#1.0.0",
+    "polymer": "Polymer/polymer#^1.4.0",
+    "iron-icons": "PolymerElements/iron-icons#^1.0.0",
+    "neon-animation": "PolymerElements/neon-animation#^1.0.0",
+    "paper-styles": "PolymerElements/paper-styles#^1.0.0",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
     "transform-animation-multiple": "jahglow/transform-animation-multiple"
   },
@@ -31,6 +31,7 @@
   },
   "resolutions": {
     "paper-styles": "^1.1.0",
-    "paper-card": "1.1.0"
+    "paper-card": "1.1.0",
+    "polymer": "^1.4.0"
   }
 }

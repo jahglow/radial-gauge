@@ -5,6 +5,7 @@ It's important to note, that a radial guage will display and animate only when '
 
 Make sure you include the contents of this style module (as-is or modified) in your theme file or main document to make the gauges display properly:
 
+```html
     <style is="custom-style">
       radial-gauge {
         --radial-gauge-width:120px;
@@ -14,17 +15,17 @@ Make sure you include the contents of this style module (as-is or modified) in y
         --radial-gauge-info-edge-offset: 5px;
       }
     </style>
-
+```
 Example for a single gauge with range at the top(default):
-
+```html
     <radial-gauge value="76%" min="0" max="100" color="green" range></radial-gauge>
-
+```
 Example for a single gauge with range at the bottom:
-
+```html
     <radial-gauge value="65%" min="-100" max="100" color="amber" range range-position="bottom"></radial-gauge>
-
+```
 Example for a double gauge with changed styles and a prefixed long value that adjusts font-size automatically:
-
+```html
     <style is="custom-style">
       radial-gauge#fatOne{
         --radial-gauge-width: 150px;
@@ -35,11 +36,11 @@ Example for a double gauge with changed styles and a prefixed long value that ad
       }
     </style>
     <radial-gauge id="fatOne" value="84.078928" min="0" max="100" prefix="$" color="green" secondary-value="45" secondary-color="red"></radial-gauge>
-
+```
 Example for a gauge with top and bottom info, dynamic color calculation for primary gauge and a custom color for top-info:
-
+```html
     <radial-gauge min="-100" max="100" range range-position="bottom" value="95" color="this.value<=69?'red':(this.value>=90?'green':'amber')" secondary-value="15" secondary-color="red" top-info="-44% " top-info-icon="undo" custom-top-info-color="#03A9F4" bottom-info="20%" bottom-info-icon="trending-up" bottom-info-color="grey"></radial-gauge>
-
+```
 ### Styling
 
 !!!The following four custom properties and mixins _MUST_ be included in your theme file, or custom-style and given values:
