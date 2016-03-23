@@ -43,7 +43,7 @@ Example for a gauge with top and bottom info, dynamic color calculation for prim
 ```
 ### Styling
 
-!!!The following four custom properties and mixins _MUST_ be included in your theme file, or custom-style and given values:
+The following five custom properties included in your theme file change the appearance of the gauge:
 
 Custom property | Description | Default
 ----------------|-------------|----------

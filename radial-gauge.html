@@ -58,7 +58,7 @@ Example for a gauge with top and bottom info, dynamic color calculation for prim
 
 ### Styling
 
-!!!The following four custom properties and mixins _MUST_ be included in your theme file, or custom-style and given values:
+The following five custom properties included in your theme file change the appearance of the gauge:
 
 Custom property | Description | Default
 ----------------|-------------|----------
@@ -256,28 +256,28 @@ Custom property | Description | Default
         width: calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width, 7px) * 2);
         @apply(--radial-gauge-range);
       }
-     :host #topInfo, :host #mainDigit, :host #bottomInfo{
-       @apply(--layout-flex);
-     @apply(--layout-horizontal);
-    }
-    :host #topInfo>span, :host #mainDigit>span, :host #bottomInfo>span{
-      @apply(--layout-flex);
-      @apply(--layout-self-center);
-    }
+      :host #topInfo, :host #mainDigit, :host #bottomInfo{
+        @apply(--layout-flex);
+        @apply(--layout-horizontal);
+      }
+      :host #topInfo>span, :host #mainDigit>span, :host #bottomInfo>span{
+        @apply(--layout-flex);
+        @apply(--layout-self-center);
+      }
 
-    :host .red .fill { border-color: var(--conditional-formatting-red, --paper-red-500); }
-    :host .red { color: var(--conditional-formatting-red,--paper-red-500); }
+      :host .red .fill { border-color: var(--conditional-formatting-red, --paper-red-500); }
+      :host .red { color: var(--conditional-formatting-red,--paper-red-500); }
 
-    :host .amber .fill { border-color: var(--conditional-formatting-amber, --paper-amber-500); }
-    :host .amber { color: var(--conditional-formatting-amber,--paper-amber-500); }
+      :host .amber .fill { border-color: var(--conditional-formatting-amber, --paper-amber-500); }
+      :host .amber { color: var(--conditional-formatting-amber,--paper-amber-500); }
 
-    :host .green .fill { border-color: var(--conditional-formatting-green, --paper-green-500); }
-    :host .green {color: var(--conditional-formatting-green, --paper-green-500);}
+      :host .green .fill { border-color: var(--conditional-formatting-green, --paper-green-500); }
+      :host .green {color: var(--conditional-formatting-green, --paper-green-500);}
 
-    :host .grey .fill {border-color: var(--conditional-formatting-grey, --paper-grey-500); }
-    :host .grey {color: var(--conditional-formatting-grey,--paper-grey-500);}
+      :host .grey .fill {border-color: var(--conditional-formatting-grey, --paper-grey-500); }
+      :host .grey {color: var(--conditional-formatting-grey,--paper-grey-500);}
 
-  </style>
+    </style>
     <div id="radialProgress" class$="[[rangePosition]]">
       <div class="primary">
         <div class="mask full">
@@ -308,160 +308,159 @@ Custom property | Description | Default
 
 
 <script>
-    'use strict';
-      Polymer({
-        is: 'radial-gauge',
-        behaviors: [
-          Polymer.NeonAnimationRunnerBehavior
-        ],
-        properties: {
-          /** `range` indicates that the gauge has range-labels placed at the top|bottom of the gauge */
-          range: {
-            type: Boolean,
-            value: false
-          },
-          /** `min` indicates range start, must start with a digit, may contain trailing characters (e.g. '100%'), mandatory! */
-          min: String,
-          /** `max` indicates range end, must start with a digit, may contain trailing characters (e.g. '100%'), mandatory! */
-          max: String,
-          /** `rangePosition` indicates where range labels are placed. Possible are: 'top' | 'bottom' */
-          rangePosition: {
-            type: String,
-            value: 'top' //default
-          },
-          /** `value` main digit. Must start with a digit, may contain trailing characters (e.g. '100%'), mandatory!*/
-          value: {
-            type: String
-          },
-          /* `prefix` - character(s) to be placed before `value` and `min` and `max` gauge labels.*/
-          prefix:String,
-          /**
-          *`color` of the main digit (`value`) and gauge representing that value. Preset colors: 'grey' | 'red' | 'amber' | 'green'.
-          * Supports ternary expression (e.g. color="this.value<=6?'red':(this.value>=9?'green':'amber')" ).
-          * NOTE: expression must use style of the properties (camelCase) prefixed with `this.`
-          */
-          color:{
-            type:String,
-            value:'grey'
-          },
-          /**
-           *`secondaryColor` - color of the secondary gauge( defined by `secondaryValue`). Preset colors: 'grey' | 'red' | 'amber' | 'green'.
-           * Supports ternary expression (e.g. `secondary-color="this.secondaryValue<=6?'red':(this.secondaryValue>=9?'green':'amber')"` ).
-           * NOTE: expression must use style of the properties (camelCase) prefixed with `this.`
-           */
-          secondaryColor:{
-            type:String,
-            value:'grey'
-          },
-          /** `secondaryValue` is the value for secondary gauge (displayed inside primary) used mainly for calculating secondary gauge rotation, not displayed in numeric form anywhere.
-           *  Must start with a digit, may contain trailing characters (e.g. '100%'), optional*/
-          secondaryValue: String,
-          /* optional piece of information placed above the main digit (`value`), prefixed with an `topInfoIcon` (if specified)*/
-          topInfo:String,
-          /*color for `topInfo` content, inherits color-presets and color ternary-computation like in `color` */
-          topInfoColor:String,
-          /*icon for `topInfo` content*/
-          topInfoIcon:String,
-          /* optional piece of information placed below the main digit (`value`), prefixed with an `bottomInfoIcon` (if specified)*/
-          bottomInfo:String,
-          /*color for `bottomInfo` content*/
-          bottomInfoColor:String,
-          /*icon for `bottomInfo` content, inherits color-presets and color ternary-computation like in `color`  */
-          bottomInfoIcon:String,
-          animationConfig: {
-            type: Object,
-            value: function () {return {primary: {},secondary: {}};}
-          },
-          _hideSecondaryGauge:{
-            type:Boolean,
-            value:false
-          },
-          /* custom color for `topInfo` content, accepts any valid CSS color declaration */
-          customTopInfoColor:String,
-          /* custom color for primary gauge, accepts any valid CSS color declaration */
-          customPrimaryColor:String,
-          /* custom color for `bottomInfo` content, accepts any valid CSS color declaration */
-          customBottomInfoColor:String,
-          /* custom color for secondary gauge, accepts any valid CSS color declaration */
-          customSecondaryColor:String
-        },
-        observers:[
-          '_primaryObserver(value, min, max)',
-          '_secondaryObserver(secondaryValue, min, max)'
-        ],
-        _primaryObserver:function(value,min, max){
-          this._computeRotation({ value: value, animation: 'primary'});
-        },
-        _secondaryObserver:function(value,min, max){
-          this._computeRotation({ value: value, animation: 'secondary'});
-        },
-        ready: function () {
-          //compute colors for gauge
-          var colors=[
-            {param:'color',nodes: Polymer.dom(this.root).querySelectorAll('.primary , #mainDigit>span')},
-            {param:'secondaryColor',nodes: Polymer.dom(this.root).querySelectorAll('.secondary')},
-            {param:'topInfoColor',nodes: Polymer.dom(this.root).querySelectorAll('#topInfo>span')},
-            {param:'bottomInfoColor',nodes: Polymer.dom(this.root).querySelectorAll('#bottomInfo>span')}
-          ];
-          colors.forEach(function(color){if(this[color.param] && this[color.param].length>0)this._computeColor(this[color.param],color.nodes);}.bind(this));
+  'use strict';
+  Polymer({
+    is: 'radial-gauge',
+    behaviors: [
+      Polymer.NeonAnimationRunnerBehavior
+    ],
+    properties: {
+      /** `range` indicates that the gauge has range-labels placed at the top|bottom of the gauge */
+      range: {
+        type: Boolean,
+        value: false
+      },
+      /** `min` indicates range start, must start with a digit, may contain trailing characters (e.g. '100%'), mandatory! */
+      min: String,
+      /** `max` indicates range end, must start with a digit, may contain trailing characters (e.g. '100%'), mandatory! */
+      max: String,
+      /** `rangePosition` indicates where range labels are placed. Possible are: 'top' | 'bottom' */
+      rangePosition: {
+        type: String,
+        value: 'top' //default
+      },
+      /** `value` main digit. Must start with a digit, may contain trailing characters (e.g. '100%'), mandatory!*/
+      value: {
+        type: String
+      },
+      /* `prefix` - character(s) to be placed before `value` and `min` and `max` gauge labels.*/
+      prefix:String,
+      /**
+       *`color` of the main digit (`value`) and gauge representing that value. Preset colors: 'grey' | 'red' | 'amber' | 'green'.
+       * Supports ternary expression (e.g. color="this.value<=6?'red':(this.value>=9?'green':'amber')" ).
+       * NOTE: expression must use style of the properties (camelCase) prefixed with `this.`
+       */
+      color:{
+        type:String,
+        value:'grey'
+      },
+      /**
+       *`secondaryColor` - color of the secondary gauge( defined by `secondaryValue`). Preset colors: 'grey' | 'red' | 'amber' | 'green'.
+       * Supports ternary expression (e.g. `secondary-color="this.secondaryValue<=6?'red':(this.secondaryValue>=9?'green':'amber')"` ).
+       * NOTE: expression must use style of the properties (camelCase) prefixed with `this.`
+       */
+      secondaryColor:{
+        type:String,
+        value:'grey'
+      },
+      /** `secondaryValue` is the value for secondary gauge (displayed inside primary) used mainly for calculating secondary gauge rotation, not displayed in numeric form anywhere.
+       *  Must start with a digit, may contain trailing characters (e.g. '100%'), optional*/
+      secondaryValue: String,
+      /* optional piece of information placed above the main digit (`value`), prefixed with an `topInfoIcon` (if specified)*/
+      topInfo:String,
+      /*color for `topInfo` content, inherits color-presets and color ternary-computation like in `color` */
+      topInfoColor:String,
+      /*icon for `topInfo` content*/
+      topInfoIcon:String,
+      /* optional piece of information placed below the main digit (`value`), prefixed with an `bottomInfoIcon` (if specified)*/
+      bottomInfo:String,
+      /*color for `bottomInfo` content*/
+      bottomInfoColor:String,
+      /*icon for `bottomInfo` content, inherits color-presets and color ternary-computation like in `color`  */
+      bottomInfoIcon:String,
+      animationConfig: {
+        type: Object,
+        value: function () {return {primary: {},secondary: {}};}
+      },
+      _hideSecondaryGauge:{
+        type:Boolean,
+        value:false
+      },
+      /* custom color for `topInfo` content, accepts any valid CSS color declaration */
+      customTopInfoColor:String,
+      /* custom color for primary gauge, accepts any valid CSS color declaration */
+      customPrimaryColor:String,
+      /* custom color for `bottomInfo` content, accepts any valid CSS color declaration */
+      customBottomInfoColor:String,
+      /* custom color for secondary gauge, accepts any valid CSS color declaration */
+      customSecondaryColor:String
+    },
+    observers:[
+      '_primaryObserver(value, min, max)',
+      '_secondaryObserver(secondaryValue, min, max)'
+    ],
+    _primaryObserver:function(value,min, max){
+      this._computeRotation({ value: value, animation: 'primary'});
+    },
+    _secondaryObserver:function(value,min, max){
+      this._computeRotation({ value: value, animation: 'secondary'});
+    },
+    ready: function () {
+      //compute colors for gauge
+      var colors=[
+        {param:'color',nodes: Polymer.dom(this.root).querySelectorAll('.primary , #mainDigit>span')},
+        {param:'secondaryColor',nodes: Polymer.dom(this.root).querySelectorAll('.secondary')},
+        {param:'topInfoColor',nodes: Polymer.dom(this.root).querySelectorAll('#topInfo>span')},
+        {param:'bottomInfoColor',nodes: Polymer.dom(this.root).querySelectorAll('#bottomInfo>span')}
+      ];
+      colors.forEach(function(color){if(this[color.param] && this[color.param].length>0)this._computeColor(this[color.param],color.nodes);}.bind(this));
 
-          //this._computeRotation({ value: this.value, animation: 'primary'});
-          if (this.secondaryValue && !this._hideSecondaryGauge){ this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this._hideSecondaryGauge=true} // define label position class
-        },
-        attached:function (){
-          this._adjustStyles();
-        },
-        _computeColor:function(color, nodes){
-          var re = /[\!=\<\>\)\(.]/gi;
-          if(nodes && nodes.length>0)[].slice.call(nodes).forEach(function(node){node.classList.add(re.test(color)?eval(color):color)}.bind(this));
-        },
-        _computeRotation: function(o){
-          if(!isNaN(parseFloat(o.value))){
-            var rotation = 180 / (parseFloat(this.max) - parseFloat(this.min)) * ((parseFloat(o.value)).toFixed(1) - parseFloat(this.min));
-            var fill_rotation = rotation!== 'NaN'? rotation:0;
-            var fix_rotation = rotation * 2;
-            var transitionDuration = 3000 / (parseFloat(this.max) - parseFloat(this.min)) * ((parseFloat(o.value)).toFixed(1)-parseFloat(this.min));
-            var nodes = Polymer.dom(this.root).querySelectorAll('.'+ o.animation+' .fill, .'+ o.animation+' .mask.full');
-            this.animationConfig[o.animation] = {
-              name: 'transform-animation-multiple',
-              transformFrom: 'rotate(0deg)',
-              transformTo: 'rotate('+ parseInt(fill_rotation) +'deg)',
-              nodes: Array.prototype.slice.call(nodes),
-              timing: {"duration":transitionDuration}
-            };
-            this.playAnimation(o.animation);//somehow it plays only the second time
-            this.playAnimation(o.animation);
-            for(var i=0;i<nodes.length;i++){
-              nodes[i].style.transform = 'rotate('+ fill_rotation+'deg)';
-            }
-          }
-        },
-        _adjustStyles: function(){
-          var strLen = this.value.trim().length + (this.prefix?this.prefix.length:0);
-          /* IE CSS has no support for calc() in clip, we must explicitly provide a value */
-          var customStyle=this._ownStyleProperties;
-          [["--radial-gauge-width","120px"],
-          ["--radial-gauge-rail-width","5px"],
-          ["--radial-gauge-secondary-rail-width","5px"],
-          ["--radial-gauge-secondary-offset", "0px"],
-          ["--radial-gauge-info-edge-offset", "5px"]].forEach(function(pair){
-            if(!this._ownStyleProperties[pair[0]]){this._ownStyleProperties[pair[0]]=pair[1]}
-          }.bind(this));
-          //for(var d in defaults){console.log(d)}
-
-
-          this.customStyle['--radial-gauge-secondary-width']= parseInt(customStyle['--radial-gauge-width']) - parseInt(customStyle['--radial-gauge-rail-width']) * 2 - parseInt(customStyle['--radial-gauge-secondary-offset']) * 2 + 'px';
-          this.customStyle['--radial-gauge-offset']= '-'+customStyle['--radial-gauge-rail-width'];
-          this.customStyle['--radial-gauge-half-width']= parseInt(customStyle['--radial-gauge-width']) / 2 +'px';
-          this.customStyle['--radial-gauge-secondary-half-width']= (parseInt(customStyle['--radial-gauge-width']) - parseInt(customStyle['--radial-gauge-rail-width']) * 2 - parseInt(customStyle['--radial-gauge-secondary-offset']) * 2) / 2 +'px';
-          this.updateStyles();
-          if (strLen > 4) {
-            var mainDigit = this.$.mainDigit;
-            mainDigit.style.fontSize = (parseInt(this.customStyle['--radial-gauge-secondary-width']) - ((this.secondaryValue && !this._hideSecondaryGauge)? parseInt(customStyle['--radial-gauge-secondary-rail-width']) : 0 )*2 - 10) / strLen * 1.9 + 'px';
-          }
+      //this._computeRotation({ value: this.value, animation: 'primary'});
+      if (this.secondaryValue && !this._hideSecondaryGauge){ this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this._hideSecondaryGauge=true} // define label position class
+    },
+    attached:function (){
+      this._adjustStyles();
+    },
+    _computeColor:function(color, nodes){
+      var re = /[\!=\<\>\)\(.]/gi;
+      if(nodes && nodes.length>0)[].slice.call(nodes).forEach(function(node){node.classList.add(re.test(color)?eval(color):color)}.bind(this));
+    },
+    _computeRotation: function(o){
+      if(!isNaN(parseFloat(o.value))){
+        var rotation = 180 / (parseFloat(this.max) - parseFloat(this.min)) * ((parseFloat(o.value)).toFixed(1) - parseFloat(this.min));
+        var fill_rotation = rotation!== 'NaN'? rotation:0;
+        var fix_rotation = rotation * 2;
+        var transitionDuration = 3000 / (parseFloat(this.max) - parseFloat(this.min)) * ((parseFloat(o.value)).toFixed(1)-parseFloat(this.min));
+        var nodes = Polymer.dom(this.root).querySelectorAll('.'+ o.animation+' .fill, .'+ o.animation+' .mask.full');
+        this.animationConfig[o.animation] = {
+          name: 'transform-animation-multiple',
+          transformFrom: 'rotate(0deg)',
+          transformTo: 'rotate('+ parseInt(fill_rotation) +'deg)',
+          nodes: Array.prototype.slice.call(nodes),
+          timing: {"duration":transitionDuration}
+        };
+        this.playAnimation(o.animation);//somehow it plays only the second time
+        this.playAnimation(o.animation);
+        for(var i=0;i<nodes.length;i++){
+          nodes[i].style.transform = 'rotate('+ fill_rotation+'deg)';
         }
-      });
+      }
+    },
+    _adjustStyles: function(){
+      var strLen = this.value.trim().length + (this.prefix?this.prefix.length:0);
+      /* IE CSS has no support for calc() in clip, we must explicitly provide a value */
+      var customStyle=this._ownStyleProperties;
+      [["--radial-gauge-width","120px"],
+        ["--radial-gauge-rail-width","5px"],
+        ["--radial-gauge-secondary-rail-width","5px"],
+        ["--radial-gauge-secondary-offset", "0px"],
+        ["--radial-gauge-info-edge-offset", "5px"]].forEach(function(pair){
+        if(!this._ownStyleProperties[pair[0]]){
+          this.customStyle[pair[0]]=customStyle[pair[0]]=pair[1];
+        }
+      }.bind(this));
+
+      this.customStyle['--radial-gauge-secondary-width']= parseInt(customStyle['--radial-gauge-width']) - parseInt(customStyle['--radial-gauge-rail-width']) * 2 - parseInt(customStyle['--radial-gauge-secondary-offset']) * 2 + 'px';
+      this.customStyle['--radial-gauge-offset']= '-'+customStyle['--radial-gauge-rail-width'];
+      this.customStyle['--radial-gauge-half-width']= parseInt(customStyle['--radial-gauge-width']) / 2 +'px';
+      this.customStyle['--radial-gauge-secondary-half-width']= (parseInt(customStyle['--radial-gauge-width']) - parseInt(customStyle['--radial-gauge-rail-width']) * 2 - parseInt(customStyle['--radial-gauge-secondary-offset']) * 2) / 2 +'px';
+
+      this.updateStyles();
+      if (strLen > 4) {
+        var mainDigit = this.$.mainDigit;
+        mainDigit.style.fontSize = (parseInt(this.customStyle['--radial-gauge-secondary-width']) - ((this.secondaryValue && !this._hideSecondaryGauge)? parseInt(customStyle['--radial-gauge-secondary-rail-width']) : 0 )*2 - 10) / strLen * 1.9 + 'px';
+      }
+    }
+  });
 
 </script>
-
-
