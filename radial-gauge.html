@@ -14,6 +14,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../transform-animation-multiple/transform-animation-multiple.html">
+<link rel="import" href="../r-customizer/r-customizer-inspect-behavior.html">
+
 
 <!--
 `radial-gauge` is an element providing an animated radial gauge (HTML5+CSS3) that may contain up to two gauge faces (secondary is nested inside primary one).
@@ -105,6 +107,12 @@ Custom property | Description | Default
         --radial-gauge-offset: calc(var(--radial-gauge-rail-width) * -1);
         --radial-gauge-half-width: calc(var(--radial-gauge-width) / 2 );
         --radial-gauge-secondary-half-width: calc((var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2) / 2 );
+      }
+
+      :host::before{
+        content: 'r-card';
+        display:none;
+        @apply(--r-customizer-hover);
       }
 
       :host #radialProgress {
@@ -312,7 +320,8 @@ Custom property | Description | Default
   Polymer({
     is: 'radial-gauge',
     behaviors: [
-      Polymer.NeonAnimationRunnerBehavior
+      Polymer.NeonAnimationRunnerBehavior,
+      Confirmit.RCustomizerInspectBehavior
     ],
     properties: {
       /** `range` indicates that the gauge has range-labels placed at the top|bottom of the gauge */
@@ -327,7 +336,10 @@ Custom property | Description | Default
       /** `rangePosition` indicates where range labels are placed. Possible are: 'top' | 'bottom' */
       rangePosition: {
         type: String,
-        value: 'top' //default
+        value: 'top', //default
+        meta:{
+          options:['top','bottom']
+        }
       },
       /** `value` main digit. Must start with a digit, may contain trailing characters (e.g. '100%'), mandatory!*/
       value: {
@@ -342,7 +354,10 @@ Custom property | Description | Default
        */
       color:{
         type:String,
-        value:'grey'
+        value:'grey',
+        meta:{
+          options:['grey','red','amber','green','']
+        }
       },
       /**
        *`secondaryColor` - color of the secondary gauge( defined by `secondaryValue`). Preset colors: 'grey' | 'red' | 'amber' | 'green'.
@@ -351,7 +366,10 @@ Custom property | Description | Default
        */
       secondaryColor:{
         type:String,
-        value:'grey'
+        value:'grey',
+        meta:{
+          options:['grey','red','amber','green','']
+        }
       },
       /** `secondaryValue` is the value for secondary gauge (displayed inside primary) used mainly for calculating secondary gauge rotation, not displayed in numeric form anywhere.
        *  Must start with a digit, may contain trailing characters (e.g. '100%'), optional*/
@@ -359,13 +377,23 @@ Custom property | Description | Default
       /* optional piece of information placed above the main digit (`value`), prefixed with an `topInfoIcon` (if specified)*/
       topInfo:String,
       /*color for `topInfo` content, inherits color-presets and color ternary-computation like in `color` */
-      topInfoColor:String,
+      topInfoColor:{
+        type:String,
+        meta:{
+          options:['grey','red','amber','green','']
+        }
+      },
       /*icon for `topInfo` content*/
       topInfoIcon:String,
       /* optional piece of information placed below the main digit (`value`), prefixed with an `bottomInfoIcon` (if specified)*/
       bottomInfo:String,
       /*color for `bottomInfo` content*/
-      bottomInfoColor:String,
+      bottomInfoColor:{
+        type:String,
+        meta:{
+          options:['grey','red','amber','green','']
+        }
+      },
       /*icon for `bottomInfo` content, inherits color-presets and color ternary-computation like in `color`  */
       bottomInfoIcon:String,
       animationConfig: {
@@ -384,8 +412,7 @@ Custom property | Description | Default
       customBottomInfoColor:String,
       /* custom color for secondary gauge, accepts any valid CSS color declaration */
       customSecondaryColor:String
-    },
-    observers:[
+    },    observers:[
       '_primaryObserver(value, min, max)',
       '_secondaryObserver(secondaryValue, min, max)'
     ],

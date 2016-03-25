@@ -1,6 +1,6 @@
 {
   "name": "radial-gauge",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "authors": [
     "John Archer <jahglow@gmail.com>"
   ],
@@ -22,7 +22,8 @@
     "neon-animation": "PolymerElements/neon-animation#^1.0.0",
     "paper-styles": "PolymerElements/paper-styles#^1.0.0",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
-    "transform-animation-multiple": "jahglow/transform-animation-multiple"
+    "transform-animation-multiple": "jahglow/transform-animation-multiple",
+    "r-customizer": "jahglow/r-customizer"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
