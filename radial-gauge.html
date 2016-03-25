@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../neon-animation/neon-animatable-behavior.html">
 <link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../transform-animation-multiple/transform-animation-multiple.html">
 <link rel="import" href="../r-customizer/r-customizer-inspect-behavior.html">
 
@@ -101,21 +101,22 @@ Custom property | Description | Default
   <template strip-whitespace>
     <style>
 
-      :host {
+      :host{
         display: block;
         --radial-gauge-secondary-width: calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2);
         --radial-gauge-offset: calc(var(--radial-gauge-rail-width) * -1);
         --radial-gauge-half-width: calc(var(--radial-gauge-width) / 2 );
         --radial-gauge-secondary-half-width: calc((var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2) / 2 );
+        position:relative;
       }
 
       :host::before{
-        content: 'r-card';
+        content: 'radial-gauge';
         display:none;
         @apply(--r-customizer-hover);
       }
 
-      :host #radialProgress {
+      #radialProgress {
         margin: 0 auto;
         width: var(--radial-gauge-width);
         height: var(--radial-gauge-width);
@@ -127,7 +128,7 @@ Custom property | Description | Default
         border-width: var(--radial-gauge-rail-width);
         @apply(--radial-gauge-rail);
       }
-      :host .mask {
+      .mask {
         clip: rect(0px, var(--radial-gauge-width), var(--radial-gauge-width), var(--radial-gauge-half-width));
         z-index: 0;
         display: block !important;
@@ -135,12 +136,12 @@ Custom property | Description | Default
         background: transparent !important;
         opacity:1 !important;
       }
-      :host .fill{
+      .fill{
         clip: rect(0px, var(--radial-gauge-half-width), var(--radial-gauge-width), 0px);
         border-width: var(--radial-gauge-rail-width);
       }
 
-      :host .mask, :host .fill {
+      .mask, .fill {
         width: var(--radial-gauge-width);
         height: var(--radial-gauge-width);
         will-change: transform;
@@ -149,53 +150,53 @@ Custom property | Description | Default
         box-sizing: border-box;
         border-style: solid;
       }
-      :host .secondary .mask {
+      .secondary .mask {
         clip: rect(0px, var(--radial-gauge-secondary-width), var(--radial-gauge-secondary-width),  var(--radial-gauge-secondary-half-width));
       }
 
-      :host .secondary .fill{
+      .secondary .fill{
         clip: rect(0px, var(--radial-gauge-secondary-half-width), var(--radial-gauge-secondary-width), 0px);
         border-width: var(--radial-gauge-secondary-rail-width);
       }
 
-      :host .secondary .mask, :host .secondary .fill {
+      .secondary .mask, .secondary .fill {
         width: var(--radial-gauge-secondary-width);
         height: var(--radial-gauge-secondary-width);
       }
-      :host .primary, :host .secondary{
+      .primary, .secondary{
         position: absolute;
         box-sizing: content-box;
         z-index:0;
       }
-      :host #radialProgress.top .primary{
+      #radialProgress.top .primary{
         top: var(--radial-gauge-offset);
         left: var(--radial-gauge-offset);
       }
-      :host #radialProgress.bottom .primary{
+      #radialProgress.bottom .primary{
         bottom: var(--radial-gauge-offset);
         right: var(--radial-gauge-offset);
       }
-      :host #radialProgress.top .secondary{
+      #radialProgress.top .secondary{
         top: var(--radial-gauge-secondary-offset);
         left:  var(--radial-gauge-secondary-offset);
       }
-      :host #radialProgress.bottom .secondary{
+      #radialProgress.bottom .secondary{
         bottom:  var(--radial-gauge-secondary-offset);
         right:  var(--radial-gauge-secondary-offset);
       }
-      :host #radialProgress.bottom > .primary, :host #radialProgress.bottom > .secondary {
+      #radialProgress.bottom > .primary, #radialProgress.bottom > .secondary {
         transform: rotate(180deg);
       }
-      :host #radialProgress.bottom {
+      #radialProgress.bottom {
         margin-bottom: 20px;
         margin-top: 0;
       }
-      :host #radialProgress.top {
+      #radialProgress.top {
         margin-bottom: 10px;
         margin-top: 10px;
       }
 
-      :host .inset{
+      .inset{
         position: absolute;
         top: 0; bottom: 0; right: 0; left: 0;
         z-index:0;
@@ -204,58 +205,58 @@ Custom property | Description | Default
         @apply(--radial-gauge-info-circle);
       }
 
-      :host .inset>#mainDigit {
+      .inset>#mainDigit {
         font-size: 33px;
         text-align: center;
         @apply(--radial-gauge-value);
       }
 
-      :host #topInfo,:host #bottomInfo {
+      #topInfo,#bottomInfo {
         font-size: 13px;
         text-align: center;
         vertical-align: baseline;
         padding:0 10%;
       }
-      :host #topInfo{
+      #topInfo{
         padding-top:var(--radial-gauge-info-edge-offset, 5px);
         @apply(--radial-gauge-top-info);
       }
       :host[secondary-value]:not([hide-secondary-gauge]) #topInfo{
         padding-top:var(--radial-gauge-info-edge-offset, 10px);
       }
-      :host #bottomInfo{
+      #bottomInfo{
         padding-bottom:var(--radial-gauge-info-edge-offset, 5px);
         @apply(--radial-gauge-bottom-info);
       }
       :host[secondary-value]:not([hide-secondary-gauge]) #bottomInfo{
         padding-bottom:var(--radial-gauge-info-edge-offset, 10px);
       }
-      :host .inset iron-icon{
+      .inset iron-icon{
         --iron-icon-width:0;
         --iron-icon-height:0;
       }
-      :host .inset iron-icon[icon]{
+      .inset iron-icon[icon]{
         --iron-icon-width:14px;
         --iron-icon-height:14px;
         @apply(--radial-gauge-info-icon);
       }
 
-      :host #range>span {padding:0 10px}
-      :host #range.top{
+      #range>span {padding:0 10px}
+      #range.top{
         @apply(--layout-horizontal-reverse);
         top: calc((var(--radial-gauge-rail-width, 7px) + 10px) * -1 );
       }
-      :host #range.bottom {
+      #range.bottom {
         top: calc(var(--radial-gauge-width, 120px) - var(--radial-gauge-rail-width, 7px));
       }
-      :host #range.bottom>.min, :host #range.top>.max{
+      #range.bottom>.min, #range.top>.max{
         border-right:1px solid var(--primary-text-color,#000); text-align: right;
       }
-      :host #range>.min, :host #range>.max{
+      #range>.min, #range>.max{
         @apply(--layout-flex);
       }
 
-      :host #range {
+      #range {
         @apply(--layout-horizontal);
         font-size: 10px;
         line-height: 10px;
@@ -264,26 +265,26 @@ Custom property | Description | Default
         width: calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width, 7px) * 2);
         @apply(--radial-gauge-range);
       }
-      :host #topInfo, :host #mainDigit, :host #bottomInfo{
+      #topInfo, #mainDigit, #bottomInfo{
         @apply(--layout-flex);
         @apply(--layout-horizontal);
       }
-      :host #topInfo>span, :host #mainDigit>span, :host #bottomInfo>span{
+      #topInfo>span, #mainDigit>span, #bottomInfo>span{
         @apply(--layout-flex);
         @apply(--layout-self-center);
       }
 
-      :host .red .fill { border-color: var(--conditional-formatting-red, --paper-red-500); }
-      :host .red { color: var(--conditional-formatting-red,--paper-red-500); }
+      .red .fill { border-color: var(--conditional-formatting-red, --paper-red-500); }
+      .red { color: var(--conditional-formatting-red,--paper-red-500); }
 
-      :host .amber .fill { border-color: var(--conditional-formatting-amber, --paper-amber-500); }
-      :host .amber { color: var(--conditional-formatting-amber,--paper-amber-500); }
+      .amber .fill { border-color: var(--conditional-formatting-amber, --paper-amber-500); }
+      .amber { color: var(--conditional-formatting-amber,--paper-amber-500); }
 
-      :host .green .fill { border-color: var(--conditional-formatting-green, --paper-green-500); }
-      :host .green {color: var(--conditional-formatting-green, --paper-green-500);}
+      .green .fill { border-color: var(--conditional-formatting-green, --paper-green-500); }
+      .green {color: var(--conditional-formatting-green, --paper-green-500);}
 
-      :host .grey .fill {border-color: var(--conditional-formatting-grey, --paper-grey-500); }
-      :host .grey {color: var(--conditional-formatting-grey,--paper-grey-500);}
+      .grey .fill {border-color: var(--conditional-formatting-grey, --paper-grey-500); }
+      .grey {color: var(--conditional-formatting-grey,--paper-grey-500);}
 
     </style>
     <div id="radialProgress" class$="[[rangePosition]]">
@@ -307,7 +308,7 @@ Custom property | Description | Default
         <div class$="[[rangePosition]]" id="range" hidden$="[[!range]]"><span class="min">{{prefix}}{{min}}</span><span class="max">{{prefix}}{{max}}</span></div>
         <div id="topInfo"><span style$="color: {{customTopInfoColor}}"><iron-icon icon$="[[topInfoIcon]]"></iron-icon> {{topInfo}}</span></div>
         <div id="mainDigit"><span style$="color: {{customPrimaryColor}}">{{prefix}}{{value}}</span></div>
-        <div id="bottomInfo"><span style$="color: {{customBottomInfoColor}}"><iron-icon icon$="[[bottomInfoIcon]]"></iron-icon> {{bottomInfo}}</span></div>
+        <div id="bottomInfo"><span style$="color: {{customBottomInfoColor}}"><iron-icon icon="[[bottomInfoIcon]]"></iron-icon> {{bottomInfo}}</span></div>
       </div>
     </div>
   </template>
@@ -354,7 +355,7 @@ Custom property | Description | Default
        */
       color:{
         type:String,
-        value:'grey',
+        value:null,
         meta:{
           options:['grey','red','amber','green','']
         }
@@ -366,7 +367,7 @@ Custom property | Description | Default
        */
       secondaryColor:{
         type:String,
-        value:'grey',
+        value:null,
         meta:{
           options:['grey','red','amber','green','']
         }
@@ -379,17 +380,19 @@ Custom property | Description | Default
       /*color for `topInfo` content, inherits color-presets and color ternary-computation like in `color` */
       topInfoColor:{
         type:String,
+        value:null,
         meta:{
           options:['grey','red','amber','green','']
         }
       },
       /*icon for `topInfo` content*/
-      topInfoIcon:String,
+      topInfoIcon:{type:String,value:null},
       /* optional piece of information placed below the main digit (`value`), prefixed with an `bottomInfoIcon` (if specified)*/
       bottomInfo:String,
       /*color for `bottomInfo` content*/
       bottomInfoColor:{
         type:String,
+        value:null,
         meta:{
           options:['grey','red','amber','green','']
         }
@@ -402,7 +405,7 @@ Custom property | Description | Default
       },
       _hideSecondaryGauge:{
         type:Boolean,
-        value:false
+        value:true
       },
       /* custom color for `topInfo` content, accepts any valid CSS color declaration */
       customTopInfoColor:String,
@@ -414,33 +417,47 @@ Custom property | Description | Default
       customSecondaryColor:String
     },    observers:[
       '_primaryObserver(value, min, max)',
-      '_secondaryObserver(secondaryValue, min, max)'
+      '_secondaryObserver(secondaryValue, min, max)',
+      '_colorObserver(color,secondaryColor,topInfoColor,bottomInfoColor)'
     ],
     _primaryObserver:function(value,min, max){
       this._computeRotation({ value: value, animation: 'primary'});
     },
     _secondaryObserver:function(value,min, max){
+      this._hideSecondaryGauge=false
       this._computeRotation({ value: value, animation: 'secondary'});
     },
     ready: function () {
       //compute colors for gauge
+
+      //this._computeRotation({ value: this.value, animation: 'primary'});
+      //if (this.secondaryValue && !this._hideSecondaryGauge){ this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this._hideSecondaryGauge=true} // define label position class
+    },
+    attached:function (){
+      this._adjustStyles();
+    },
+    _computeColor:function(color, nodes){
+      var presets=['grey','red','amber','green'];
+      console.log(color);
+      var re = /[\!=\<\>\)\(.]/gi;
+      if(nodes && nodes.length>0 && color && color!==null)[].slice.call(nodes).forEach(function(node){
+        var clr = re.test(color)? eval(color) : color;
+        console.log('will attack color '+ color );
+        console.log('will attack color '+ color );
+        presets.forEach(function(c){if(node.classList.contains(c)){node.classList.remove(c)}});
+        node.classList.add(clr);
+      }.bind(this));
+    },
+    _colorObserver(color,secondaryColor,topInfoColor,bottomInfoColor){
+      console.log('observeColor');
       var colors=[
         {param:'color',nodes: Polymer.dom(this.root).querySelectorAll('.primary , #mainDigit>span')},
         {param:'secondaryColor',nodes: Polymer.dom(this.root).querySelectorAll('.secondary')},
         {param:'topInfoColor',nodes: Polymer.dom(this.root).querySelectorAll('#topInfo>span')},
         {param:'bottomInfoColor',nodes: Polymer.dom(this.root).querySelectorAll('#bottomInfo>span')}
       ];
-      colors.forEach(function(color){if(this[color.param] && this[color.param].length>0)this._computeColor(this[color.param],color.nodes);}.bind(this));
-
-      //this._computeRotation({ value: this.value, animation: 'primary'});
-      if (this.secondaryValue && !this._hideSecondaryGauge){ this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this._hideSecondaryGauge=true} // define label position class
-    },
-    attached:function (){
-      this._adjustStyles();
-    },
-    _computeColor:function(color, nodes){
-      var re = /[\!=\<\>\)\(.]/gi;
-      if(nodes && nodes.length>0)[].slice.call(nodes).forEach(function(node){node.classList.add(re.test(color)?eval(color):color)}.bind(this));
+      console.log(colors);
+      colors.forEach(function(c){this._computeColor(this[c.param],c.nodes);}.bind(this));
     },
     _computeRotation: function(o){
       if(!isNaN(parseFloat(o.value))){
